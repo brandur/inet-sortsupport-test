@@ -1,0 +1,17 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    descriptive_statistics (2.5.1)
+    pg (1.1.4)
+    sequel (5.16.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  descriptive_statistics
+  pg
+  sequel
+
+BUNDLED WITH
+   1.16.1
