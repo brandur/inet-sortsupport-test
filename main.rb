@@ -5,7 +5,7 @@ DB = Sequel.connect(ENV["DATABASE_URL"])
 TABLE_NAME = :inet_sortsupport_tes
 
 def create_indexes(num_times)
-  puts "Generating index #{num_times} time(s)"
+  puts "Sorting #{num_times} time(s)"
   puts ""
 
   data = []
@@ -13,13 +13,9 @@ def create_indexes(num_times)
   num_times.times do
     t = Time.now
     DB.run <<~eos
-      CREATE INDEX index_inet ON #{TABLE_NAME} (ip);
+      SELECT count(distinct ip) FROM #{TABLE_NAME};
     eos
     data << Time.now - t
-
-    DB.run <<~eos
-      DROP INDEX index_inet;
-    eos
   end
 
   puts "min  = #{data.min}"
