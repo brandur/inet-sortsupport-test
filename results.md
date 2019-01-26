@@ -114,10 +114,10 @@ Generating index 100 time(s)
 
 min  = 0.55005
 max  = 0.645045
-mean = 0.5750675600000001
+mean = 0.5750675600000001      # ~25.6% improvement
 p50  = 0.5659475
 p75  = 0.5833285
-p95  = 0.61738755
+p95  = 0.61738755              # ~23.5% improvement
 
 Truncating data
 ---
@@ -126,10 +126,10 @@ Generating index 100 time(s)
 
 min  = 5.766131
 max  = 7.296124
-mean = 5.8546793799999985
+mean = 5.8546793799999985      # ~26.2% improvement
 p50  = 5.819115
 p75  = 5.8598875
-p95  = 5.9931014000000005
+p95  = 5.9931014000000005      # ~25.7% improvement
 
 Truncating data
 ```
