@@ -7,62 +7,62 @@ Generating schema
 
 ---
 Generating 1000 row(s) of data
-Generating index 100 time(s)
+Sorting 100 time(s)
 
-min  = 0.000904
-max  = 0.001258
-mean = 0.0010171600000000002
-p50  = 0.0010125
-p75  = 0.00107325
-p95  = 0.0011212
+min  = 0.000424
+max  = 0.001127
+mean = 0.0004661199999999999
+p50  = 0.000454
+p75  = 0.0004725
+p95  = 0.00051235
 
 Truncating data
 ---
 Generating 10000 row(s) of data
-Generating index 100 time(s)
+Sorting 100 time(s)
 
-min  = 0.005776
-max  = 0.030469
-mean = 0.0065037300000000044
-p50  = 0.0060090000000000005
-p75  = 0.0061075
-p95  = 0.00625615
+min  = 0.004068
+max  = 0.004761
+mean = 0.004209499999999999
+p50  = 0.004191
+p75  = 0.00426075
+p95  = 0.0043713499999999995
 
 Truncating data
 ---
 Generating 100000 row(s) of data
-Generating index 100 time(s)
+Sorting 100 time(s)
 
-min  = 0.066721
-max  = 0.093911
-mean = 0.07214983000000001
-p50  = 0.0681155
-p75  = 0.0686665
-p95  = 0.09141355
+min  = 0.051739
+max  = 0.059036
+mean = 0.05313033000000002
+p50  = 0.052864
+p75  = 0.053511750000000004
+p95  = 0.05483335
 
 Truncating data
 ---
 Generating 1000000 row(s) of data
-Generating index 100 time(s)
+Sorting 100 time(s)
 
-min  = 0.749199
-max  = 0.851395
-mean = 0.77258445
-p50  = 0.767247
-p75  = 0.7773352499999999
-p95  = 0.8071030499999999
+min  = 0.79334
+max  = 0.871573
+mean = 0.8177914500000003
+p50  = 0.8123075
+p75  = 0.8276494999999999
+p95  = 0.84973
 
 Truncating data
 ---
 Generating 10000000 row(s) of data
-Generating index 100 time(s)
+Sorting 100 time(s)
 
-min  = 7.841454
-max  = 9.266041
-mean = 7.936806570000003
-p50  = 7.907461
-p75  = 7.9465727500000005
-p95  = 8.064655299999998
+min  = 11.690582
+max  = 12.176468
+mean = 11.876579259999998
+p50  = 11.884907
+p75  = 11.973726749999999
+p95  = 12.0734449
 
 Truncating data
 ```
@@ -74,62 +74,62 @@ Generating schema
 
 ---
 Generating 1000 row(s) of data
-Generating index 100 time(s)
+Sorting 100 time(s)
 
-min  = 0.000814
-max  = 0.001373
-mean = 0.0009348
-p50  = 0.000924
-p75  = 0.0009885
-p95  = 0.0010313
+min  = 0.0003
+max  = 0.001023
+mean = 0.00033108
+p50  = 0.0003155
+p75  = 0.000332
+p95  = 0.0003739999999999999
 
 Truncating data
 ---
 Generating 10000 row(s) of data
-Generating index 100 time(s)
+Sorting 100 time(s)
 
-min  = 0.004419
-max  = 0.029986
-mean = 0.00520178
-p50  = 0.0046965
-p75  = 0.004796
-p95  = 0.0049716
+min  = 0.002419
+max  = 0.003389
+mean = 0.0025243999999999996
+p50  = 0.0024935
+p75  = 0.00254375
+p95  = 0.0026770500000000003
 
 Truncating data
 ---
 Generating 100000 row(s) of data
-Generating index 100 time(s)
+Sorting 100 time(s)
 
-min  = 0.048839
-max  = 0.079167
-mean = 0.054745669999999996
-p50  = 0.050678
-p75  = 0.051969
-p95  = 0.07486369999999999
+min  = 0.039816
+max  = 0.071363
+mean = 0.04101494
+p50  = 0.040375
+p75  = 0.040601250000000005
+p95  = 0.04183175
 
 Truncating data
 ---
 Generating 1000000 row(s) of data
-Generating index 100 time(s)
+Sorting 100 time(s)
 
-min  = 0.55005
-max  = 0.645045
-mean = 0.5750675600000001      # ~25.6% improvement
-p50  = 0.5659475
-p75  = 0.5833285
-p95  = 0.61738755              # ~23.5% improvement
+min  = 0.486035
+max  = 0.531021
+mean = 0.49609569999999986        # ~39.3% improvement
+p50  = 0.493289
+p75  = 0.497853
+p95  = 0.51513555                 # ~39.4% improvement
 
 Truncating data
 ---
 Generating 10000000 row(s) of data
-Generating index 100 time(s)
+Sorting 100 time(s)
 
-min  = 5.766131
-max  = 7.296124
-mean = 5.8546793799999985      # ~26.2% improvement
-p50  = 5.819115
-p75  = 5.8598875
-p95  = 5.9931014000000005      # ~25.7% improvement
+min  = 6.749011
+max  = 7.306028
+mean = 6.879143770000004          # ~42.1% improvement
+p50  = 6.864981
+p75  = 6.90597525
+p95  = 7.00636535                 # ~42.0% improvement
 
 Truncating data
 ```
