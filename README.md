@@ -14,5 +14,5 @@ times, then print the statistics for each sample data size.
 direnv allow
 bundle install
 createdb inet-sortsupport-test
-bundle exec ruby main.rb
+bundle exec ruby bench.rb
 ```
