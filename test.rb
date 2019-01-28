@@ -148,14 +148,14 @@ def inet_abbreviate_key(sizeof_datum, ipaddr)
 
     else
 
-      # 31 = 6 bits netmask size + 25 subnet bits
-      res |= netmask_int << 31
-      debug("res after shifting netmask int left 31 and OR =\n#{stringify_int(res)}")
+      netmask_size_and_subnet = 0
 
       # an IPv4 netmask has a maximum value of 32 which takes 6 bits to contain
       netmask_size = ipaddr.num_netmask_bits
-      res |= netmask_size << 25
-      debug("res after shifting netmask size (#{netmask_size}) left 25 and OR =\n#{stringify_int(res)}")
+
+      raise "netmask_size should be 0-32" unless netmask_size >= 0 && netmask_size <= 32
+      netmask_size_and_subnet |= netmask_size << 25
+      debug("netmask_size_and_subnet after shifting netmask size (#{netmask_size}) left 25 and OR =\n#{stringify_int(netmask_size_and_subnet)}")
 
       # if we have more than 25 subnet bits of information, shift it down
       # to the available size
@@ -163,8 +163,16 @@ def inet_abbreviate_key(sizeof_datum, ipaddr)
         subnet_int >>= subnet_size - 25
         debug("subnet_int after shifting right by #{subnet_size - 25} =\n#{stringify_int(subnet_int)}")
       end
-      res |= subnet_int
-      debug("res after OR with subnet int =\n#{stringify_int(res)}")
+      netmask_size_and_subnet  |= subnet_int
+      debug("netmask_size_and_subnet after OR with subnet int =\n#{stringify_int(netmask_size_and_subnet)}")
+
+      raise "unexpected bits set" if netmask_size_and_subnet | 0xffffffff != 0xffffffff
+
+      debug("netmask int shifted left 31 =\n#{stringify_int(netmask_int << 31)}")
+
+      # 31 = 6 bits netmask size + 25 subnet bits
+      res |= (netmask_int << 31) | netmask_size_and_subnet
+      debug("res after shifting netmask int left 31 and OR =\n#{stringify_int(res)}")
 
     end
 
@@ -247,14 +255,17 @@ end
 #
 
 def test_inet_abbreviate_key
-  assert_equal "00 00 00 00 00 02 04 06 (132102)", stringify_int(inet_abbreviate_key(
-    8, parse_ip("1.2.3.4/0")))
+  assert_equal "00 00 00 00 00 02 04 06 (132102)",
+    stringify_int(inet_abbreviate_key(
+      8, parse_ip("1.2.3.4/0")))
 
-  # assert_equal "00 00 00 00 00 00 00 00", stringify_int(inet_abbreviate_key(
-  #   8, parse_ip("1.2.3.4/24")))
+  assert_equal "00 81 01 80 30 00 00 04 (36311922068422660)",
+    stringify_int(inet_abbreviate_key(
+      8, parse_ip("1.2.3.4/24")))
 
-  # assert_equal "80 00 00 00 00 00 00 00", stringify_int(inet_abbreviate_key(
-  #   8, parse_ip("ffff:83e7:f118:57dc:6093:6d92:689d:58cf/70")))
+  assert_equal "ff ff c1 f3 f8 8c 2b ee (18446675852323990510)",
+    stringify_int(inet_abbreviate_key(
+      8, parse_ip("ffff:83e7:f118:57dc:6093:6d92:689d:58cf/70")))
 end
 
 def test_parse_ip
