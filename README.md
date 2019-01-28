@@ -10,9 +10,21 @@ times, then print the statistics for each sample data size.
 
 ## Instructions
 
+Benchmark:
+
+Start up a Postgres server on `$PGPORT`, then:
+
 ```
 direnv allow
 bundle install
 createdb inet-sortsupport-test
 bundle exec ruby bench.rb
+```
+
+Algorithm testing:
+
+```
+direnv allow
+bundle install
+bundle exec ruby test.rb
 ```
