@@ -51,6 +51,14 @@ class IPAddress
     @num_netmask_bits = num_netmask_bits
   end
 
+  def ip_family_bits
+    if ip_family == IP_V6
+      BYTES_IP_V6 * BITS_PER_BYTE
+    else
+      BYTES_IP_V4 * BITS_PER_BYTE
+    end
+  end
+
   def to_s
     bytes_str = if ip_family == IP_V4
       bytes.map { |b| b.to_s }.join(".")
@@ -75,20 +83,98 @@ def assert_equal(expected, actual)
 end
 
 def debug(str)
-  puts $str if $debug
+  puts(str) if $debug
 end
 
-def inet_abbreviate_key(sizeof_datum, ip_address)
+def inet_abbreviate_key(sizeof_datum, ipaddr)
   if sizeof_datum != 4 && sizeof_datum != 8
     raise ArgumentError, "sizeof_datum must be 4 or 8"
   end
 
   res = 0
-  if ip_address.ip_family == IP_V6
+  if ipaddr.ip_family == IP_V6
     res = 1
     res <<= sizeof_datum * BITS_PER_BYTE - 1
   end
 
+  ipaddr_int = 0
+  ipaddr_int |= ipaddr.bytes[0]
+  ipaddr_int <<= 8
+  ipaddr_int |= ipaddr.bytes[1]
+  ipaddr_int <<= 8
+  ipaddr_int |= ipaddr.bytes[2]
+  ipaddr_int <<= 8
+  ipaddr_int |= ipaddr.bytes[3]
+
+  if ipaddr.ip_family == IP_V6 && sizeof_datum == 8
+    ipaddr_int <<= 8
+    ipaddr_int |= ipaddr.bytes[4]
+    ipaddr_int <<= 8
+    ipaddr_int |= ipaddr.bytes[5]
+    ipaddr_int <<= 8
+    ipaddr_int |= ipaddr.bytes[6]
+    ipaddr_int <<= 8
+    ipaddr_int |= ipaddr.bytes[7]
+  end
+  debug("ipaddr_int =\n#{stringify_int(ipaddr_int)} (#{ipaddr_int})")
+
+  netmask_int = ipaddr_int
+  subnet_int = 0
+  subnet_size = 0
+
+  size_left = sizeof_datum * BITS_PER_BYTE - ipaddr.num_netmask_bits - 1
+  debug("size_left = #{size_left}")
+  if size_left > 0
+    subnet_size = ipaddr.ip_family_bits - ipaddr.num_netmask_bits
+    debug("subnet_size = #{subnet_size}")
+
+    if subnet_size > 0
+      subnet_bitmask = (1 << subnet_size) - 1
+      debug("subnet_bitmask =\n#{stringify_int(subnet_bitmask)}")
+
+      subnet_int = ipaddr_int & subnet_bitmask
+      debug("subnet_int =\n#{stringify_int(subnet_int)}")
+
+      netmask_int = ipaddr_int - subnet_int
+      debug("netmask_int =\n#{stringify_int(netmask_int)}")
+    end
+  end
+
+  if sizeof_datum == 8
+
+    if ipaddr.ip_family == IP_V6
+
+      res |= netmask_int >> 1
+
+    else
+
+      # 31 = 6 bits netmask size + 25 subnet bits
+      res |= netmask_int << 31
+      debug("res after shifting netmask int left 31 and OR =\n#{stringify_int(res)}")
+
+      # an IPv4 netmask has a maximum value of 32 which takes 6 bits to contain
+      netmask_size = ipaddr.num_netmask_bits
+      res |= netmask_size << 25
+      debug("res after shifting netmask size (#{netmask_size}) left 25 and OR =\n#{stringify_int(res)}")
+
+      # if we have more than 25 subnet bits of information, shift it down
+      # to the available size
+      if subnet_size > 25
+        subnet_int >>= subnet_size - 25
+        debug("subnet_int after shifting right by #{subnet_size - 25} =\n#{stringify_int(subnet_int)}")
+      end
+      res |= subnet_int
+      debug("res after OR with subnet int =\n#{stringify_int(res)}")
+
+    end
+
+  else
+
+    res |= netmask_int >> 1
+
+  end
+
+  debug("final_res =\n#{stringify_int(res)}")
   res
 end
 
@@ -144,7 +230,7 @@ def parse_ip(str)
   end
 end
 
-def stringify_integer(int)
+def stringify_int(int)
   str = int.to_s(16)
 
   # 2 = One byte represented by 2 characters. 8 = show a full 8 bytes for the
@@ -153,7 +239,7 @@ def stringify_integer(int)
     str = "0" * (2 * 8 - str.length) + str
   end
 
-  str.chars.each_slice(2).map { |b1, b2| "#{b1}#{b2}" }.join(" " )
+  str.chars.each_slice(2).map { |b1, b2| "#{b1}#{b2}" }.join(" " ) + " (#{int})"
 end
 
 #
@@ -161,8 +247,14 @@ end
 #
 
 def test_inet_abbreviate_key
-  assert_equal "80 00 00 00 00 00 00 00", stringify_integer(inet_abbreviate_key(
-    8, parse_ip("ffff:83e7:f118:57dc:6093:6d92:689d:58cf/70")))
+  assert_equal "00 00 00 00 00 02 04 06 (132102)", stringify_int(inet_abbreviate_key(
+    8, parse_ip("1.2.3.4/0")))
+
+  # assert_equal "00 00 00 00 00 00 00 00", stringify_int(inet_abbreviate_key(
+  #   8, parse_ip("1.2.3.4/24")))
+
+  # assert_equal "80 00 00 00 00 00 00 00", stringify_int(inet_abbreviate_key(
+  #   8, parse_ip("ffff:83e7:f118:57dc:6093:6d92:689d:58cf/70")))
 end
 
 def test_parse_ip
@@ -180,7 +272,7 @@ def test_parse_ip
     parse_ip("ff06::c3").to_s
 end
 
-$debug = true if ENV["DEBUG"] == true
+$debug = true if ENV["DEBUG"] == "true"
 
 test_parse_ip
 test_inet_abbreviate_key
