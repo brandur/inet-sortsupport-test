@@ -3,8 +3,9 @@
 $debug = false
 $num_assertions_run = 0
 
-ABBREV_INET4_BITS_NETMASK_SIZE = 6
-ABBREV_INET4_BITS_SUBNET = 25
+ABBREV_BITS_INET_FAMILY = 1
+ABBREV_BITS_INET4_NETMASK_SIZE = 6
+ABBREV_BITS_INET4_SUBNET = 25
 
 BITS_PER_BYTE = 8
 BYTES_IP_V4 = 4
@@ -97,7 +98,7 @@ def inet_abbreviate_key(sizeof_datum, ipaddr)
   res = 0
   if ipaddr.ip_family == IP_V6
     res = 1
-    res <<= sizeof_datum * BITS_PER_BYTE - 1
+    res <<= sizeof_datum * BITS_PER_BYTE - ABBREV_BITS_INET_FAMILY
   end
 
   ipaddr_int = 0
@@ -147,7 +148,7 @@ def inet_abbreviate_key(sizeof_datum, ipaddr)
 
     if ipaddr.ip_family == IP_V6
 
-      res |= netmask_int >> 1
+      res |= netmask_int >> ABBREV_BITS_INET_FAMILY
 
     else
 
@@ -157,31 +158,36 @@ def inet_abbreviate_key(sizeof_datum, ipaddr)
       netmask_size = ipaddr.num_netmask_bits
 
       raise "netmask_size should be 0-32" unless netmask_size >= 0 && netmask_size <= BYTES_IP_V4 * BITS_PER_BYTE
-      netmask_size_and_subnet |= netmask_size << ABBREV_INET4_BITS_SUBNET
-      debug("netmask_size_and_subnet after shifting netmask size (#{netmask_size}) left #{ABBREV_INET4_BITS_SUBNET} and OR =\n#{stringify_int(netmask_size_and_subnet)}")
+      netmask_size_and_subnet |= netmask_size << ABBREV_BITS_INET4_SUBNET
+      debug("netmask_size_and_subnet after shifting netmask size (#{netmask_size}) left #{ABBREV_BITS_INET4_SUBNET} and OR =\n#{stringify_int(netmask_size_and_subnet)}")
 
-      # if we have more than ABBREV_INET4_BITS_SUBNET subnet bits of information, shift it down
+      # if we have more than ABBREV_BITS_INET4_SUBNET subnet bits of information, shift it down
       # to the available size
-      if datum_subnet_size > ABBREV_INET4_BITS_SUBNET
-        subnet_int >>= datum_subnet_size - ABBREV_INET4_BITS_SUBNET
-        debug("subnet_int after shifting right by #{datum_subnet_size - ABBREV_INET4_BITS_SUBNET} =\n#{stringify_int(subnet_int)}")
+      if datum_subnet_size > ABBREV_BITS_INET4_SUBNET
+        subnet_int >>= datum_subnet_size - ABBREV_BITS_INET4_SUBNET
+        debug("subnet_int after shifting right by #{datum_subnet_size - ABBREV_BITS_INET4_SUBNET} =\n#{stringify_int(subnet_int)}")
       end
       netmask_size_and_subnet  |= subnet_int
       debug("netmask_size_and_subnet after OR with subnet int =\n#{stringify_int(netmask_size_and_subnet)}")
+      debug("0x7fffffff =\n#{stringify_int(0x7fffffff)}")
+      debug("0xffffffff80000000 =\n#{stringify_int(0xffffffff80000000)}")
 
-      raise "unexpected bits set" if netmask_size_and_subnet | 0xffffffff != 0xffffffff
-
-      debug("netmask int shifted left 31 =\n#{stringify_int(netmask_int << 31)}")
+      raise "unexpected bits set on netmask_size_and_subnet " if netmask_size_and_subnet | 0x7fffffff != 0x7fffffff
 
       # 31 = 6 bits netmask size + 25 subnet bits
-      res |= (netmask_int << ABBREV_INET4_BITS_NETMASK_SIZE + ABBREV_INET4_BITS_SUBNET) | netmask_size_and_subnet
+      netmask_shifted = netmask_int << ABBREV_BITS_INET4_NETMASK_SIZE + ABBREV_BITS_INET4_SUBNET
+      debug("netmask int shifted left 31 =\n#{stringify_int(netmask_shifted)}")
+
+      raise "unexpected bits set on netmask_shifted " if netmask_shifted & 0xffffffff80000000 != netmask_shifted
+
+      res |= netmask_shifted | netmask_size_and_subnet
       debug("res after shifting netmask int left 31 and OR =\n#{stringify_int(res)}")
 
     end
 
   else
 
-    res |= netmask_int >> 1
+    res |= netmask_int >> ABBREV_BITS_INET_FAMILY
 
   end
 
@@ -258,13 +264,13 @@ end
 #
 
 def test_inet_abbreviate_key
-  assert_equal "00 00 00 00 00 02 04 06 (132102)",
-    stringify_int(inet_abbreviate_key(
-      8, parse_ip("1.2.3.4/0")))
-
   assert_equal "00 81 01 80 30 00 00 04 (36311922068422660)",
     stringify_int(inet_abbreviate_key(
       8, parse_ip("1.2.3.4/24")))
+
+  assert_equal "00 00 00 00 00 02 04 06 (132102)",
+    stringify_int(inet_abbreviate_key(
+      8, parse_ip("1.2.3.4/0")))
 
   assert_equal "ff ff c1 f3 f8 8c 2b ee (18446675852323990510)",
     stringify_int(inet_abbreviate_key(
