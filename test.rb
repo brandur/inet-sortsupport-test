@@ -143,16 +143,14 @@ def inet_abbreviate_key(sizeof_datum, ipaddr)
   datum_subnet_size = [ipaddr.ip_family_bits - ipaddr.num_netmask_bits, datum_size_left].min
   debug("datum_subnet_size = #{datum_subnet_size}")
 
-  if datum_subnet_size > 0
-    subnet_bitmask = (1 << datum_subnet_size) - 1
-    debug("subnet_bitmask =\n#{stringify_int(subnet_bitmask)}")
+  subnet_bitmask = (1 << [0, datum_subnet_size].max) - 1
+  debug("subnet_bitmask =\n#{stringify_int(subnet_bitmask)}")
 
-    subnet_int = ipaddr_int & subnet_bitmask
-    debug("subnet_int =\n#{stringify_int(subnet_int)}")
+  subnet_int = ipaddr_int & subnet_bitmask
+  debug("subnet_int =\n#{stringify_int(subnet_int)}")
 
-    netmask_int = ipaddr_int - subnet_int
-    debug("netmask_int =\n#{stringify_int(netmask_int)}")
-  end
+  netmask_int = ipaddr_int - subnet_int
+  debug("netmask_int =\n#{stringify_int(netmask_int)}")
 
   if sizeof_datum == 8
 
