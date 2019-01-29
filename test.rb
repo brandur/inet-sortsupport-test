@@ -24,9 +24,13 @@ class IPAddress
       raise ArgumentError, "invalid IP family: #{ip_family}"
     end
 
+    if bytes.length != 16
+      raise ArgumentError, "bytes must always be exactly length 16"
+    end
+
     if ip_family == IP_V4
-      if bytes.length != 4
-        raise ArgumentError, "bytes in IPv4 must be exactly length 4"
+      if bytes[4...16] != [0] * 12
+        raise ArgumentError, "bytes in IPv4 must have 12 zeroed bytes at the end"
       end
 
       if num_netmask_bits < 0 || num_netmask_bits > BYTES_IP_V4 * BITS_PER_BYTE
@@ -65,7 +69,7 @@ class IPAddress
 
   def to_s
     bytes_str = if ip_family == IP_V4
-      bytes.map { |b| b.to_s }.join(".")
+      bytes[0...4].map { |b| b.to_s }.join(".")
     else
       # No fancy abbreviations (by design)
       bytes.each_slice(2).map { |(b1, b2)| '%02X%02X' % [b1, b2] }.join(":").downcase
@@ -209,6 +213,10 @@ def parse_ip(str)
     end
 
     bytes = ip.split(".").map { |b| b.to_i}
+
+    # Add an extra 12 zeroed bytes to simulate how an IPv4 is really stored in
+    # Postgres' C code.
+    bytes += [0] * 12
 
     IPAddress.new(IP_V4, bytes, netmask_bits)
   elsif str.include?(":")
