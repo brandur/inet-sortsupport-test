@@ -129,6 +129,8 @@ def inet_abbreviate_key(sizeof_datum, ipaddr)
 
   if sizeof_datum == 8 && ipaddr.ip_family == IP_V4
     ipaddr_int >>= sizeof_datum * BITS_PER_BYTE - BYTES_IP_V4 * BITS_PER_BYTE
+
+    raise "expected ipaddr_int to be smaller than 2**32 - 1 (max unsigned 32-bit integer" if ipaddr_int > (2**32 - 1)
   end
 
   debug("ipaddr_int (after maybe shift) =\n#{stringify_int(ipaddr_int)} (#{ipaddr_int})")
@@ -283,6 +285,10 @@ def test_inet_abbreviate_key
   assert_equal "00 00 00 00 00 02 04 06 (132102)",
     stringify_int(inet_abbreviate_key(
       8, parse_ip("1.2.3.4/0")))
+
+  assert_equal "7f ff ff ff c0 00 00 00 (9223372035781033984)",
+    stringify_int(inet_abbreviate_key(
+      8, parse_ip("255.255.255.255/32")))
 
   assert_equal "ff ff c1 f3 f8 8c 2b ee (18446675852323990510)",
     stringify_int(inet_abbreviate_key(
