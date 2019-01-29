@@ -128,20 +128,19 @@ def inet_abbreviate_key(sizeof_datum, ipaddr)
 
   datum_size_left = sizeof_datum * BITS_PER_BYTE - ipaddr.num_netmask_bits - 1
   debug("datum_size_left = #{datum_size_left}")
-  if datum_size_left > 0
-    datum_subnet_size = [ipaddr.ip_family_bits - ipaddr.num_netmask_bits, datum_size_left].min
-    debug("datum_subnet_size = #{datum_subnet_size}")
 
-    if datum_subnet_size > 0
-      subnet_bitmask = (1 << datum_subnet_size) - 1
-      debug("subnet_bitmask =\n#{stringify_int(subnet_bitmask)}")
+  datum_subnet_size = [ipaddr.ip_family_bits - ipaddr.num_netmask_bits, datum_size_left].min
+  debug("datum_subnet_size = #{datum_subnet_size}")
 
-      subnet_int = ipaddr_int & subnet_bitmask
-      debug("subnet_int =\n#{stringify_int(subnet_int)}")
+  if datum_subnet_size > 0
+    subnet_bitmask = (1 << datum_subnet_size) - 1
+    debug("subnet_bitmask =\n#{stringify_int(subnet_bitmask)}")
 
-      netmask_int = ipaddr_int - subnet_int
-      debug("netmask_int =\n#{stringify_int(netmask_int)}")
-    end
+    subnet_int = ipaddr_int & subnet_bitmask
+    debug("subnet_int =\n#{stringify_int(subnet_int)}")
+
+    netmask_int = ipaddr_int - subnet_int
+    debug("netmask_int =\n#{stringify_int(netmask_int)}")
   end
 
   if sizeof_datum == 8
