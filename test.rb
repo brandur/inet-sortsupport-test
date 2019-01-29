@@ -114,7 +114,7 @@ def inet_abbreviate_key(sizeof_datum, ipaddr)
   ipaddr_int <<= 8
   ipaddr_int |= ipaddr.bytes[3]
 
-  if ipaddr.ip_family == IP_V6 && sizeof_datum == 8
+  if sizeof_datum == 8
     ipaddr_int <<= 8
     ipaddr_int |= ipaddr.bytes[4]
     ipaddr_int <<= 8
@@ -124,7 +124,14 @@ def inet_abbreviate_key(sizeof_datum, ipaddr)
     ipaddr_int <<= 8
     ipaddr_int |= ipaddr.bytes[7]
   end
-  debug("ipaddr_int =\n#{stringify_int(ipaddr_int)} (#{ipaddr_int})")
+
+  debug("ipaddr_int (after direct ingestion) =\n#{stringify_int(ipaddr_int)} (#{ipaddr_int})")
+
+  if sizeof_datum == 8 && ipaddr.ip_family == IP_V4
+    ipaddr_int >>= sizeof_datum * BITS_PER_BYTE - BYTES_IP_V4 * BITS_PER_BYTE
+  end
+
+  debug("ipaddr_int (after maybe shift) =\n#{stringify_int(ipaddr_int)} (#{ipaddr_int})")
 
   netmask_int = ipaddr_int
   subnet_int = 0
