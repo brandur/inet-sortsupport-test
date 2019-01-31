@@ -76,60 +76,60 @@ Generating schema
 Generating 1000 row(s) of data
 Sorting 100 time(s)
 
-min  = 0.0003
-max  = 0.001023
-mean = 0.00033108
-p50  = 0.0003155
-p75  = 0.000332
-p95  = 0.0003739999999999999
+min  = 0.00029
+max  = 0.000895
+mean = 0.0003126500000000002
+p50  = 0.000302
+p75  = 0.000304
+p95  = 0.00033715
 
 Truncating data
 ---
 Generating 10000 row(s) of data
 Sorting 100 time(s)
 
-min  = 0.002419
-max  = 0.003389
-mean = 0.0025243999999999996
-p50  = 0.0024935
-p75  = 0.00254375
-p95  = 0.0026770500000000003
+min  = 0.002417
+max  = 0.003123
+mean = 0.002479150000000002
+p50  = 0.002452
+p75  = 0.002485
+p95  = 0.0025877
 
 Truncating data
 ---
 Generating 100000 row(s) of data
 Sorting 100 time(s)
 
-min  = 0.039816
-max  = 0.071363
-mean = 0.04101494
-p50  = 0.040375
-p75  = 0.040601250000000005
-p95  = 0.04183175
+min  = 0.028864
+max  = 0.034043
+mean = 0.030072489999999993
+p50  = 0.030072500000000002
+p75  = 0.03044225
+p95  = 0.031131350000000002
 
 Truncating data
 ---
 Generating 1000000 row(s) of data
 Sorting 100 time(s)
 
-min  = 0.486035
-max  = 0.531021
-mean = 0.49609569999999986        # ~39.3% improvement
-p50  = 0.493289
-p75  = 0.497853
-p95  = 0.51513555                 # ~39.4% improvement
+min  = 0.369679
+max  = 0.415828
+mean = 0.37722392999999976             # ~53.9% reduction
+p50  = 0.375751
+p75  = 0.37938125
+p95  = 0.38539415                      # ~54.7% reduction
 
 Truncating data
 ---
 Generating 10000000 row(s) of data
 Sorting 100 time(s)
 
-min  = 6.749011
-max  = 7.306028
-mean = 6.879143770000004          # ~42.1% improvement
-p50  = 6.864981
-p75  = 6.90597525
-p95  = 7.00636535                 # ~42.0% improvement
+min  = 4.630163
+max  = 4.914647
+mean = 4.671883840000002               # ~60.7% reduction
+p50  = 4.661291
+p75  = 4.6916195
+p95  = 4.7220945500000004              # ~60.9% reduction
 
 Truncating data
 ```
