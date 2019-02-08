@@ -4,7 +4,7 @@ require 'sequel'
 DB = Sequel.connect(ENV["DATABASE_URL"])
 TABLE_NAME = :inet_sortsupport_tes
 
-def create_indexes(num_times)
+def execute_count_distinct(num_times)
   puts "Sorting #{num_times} time(s)"
   puts ""
 
@@ -109,6 +109,6 @@ create_schema
   10_000_000,
 ].each do |num_rows|
   generate_data(num_rows)
-  create_indexes(100)
+  execute_count_distinct(100)
   truncate_data
 end
